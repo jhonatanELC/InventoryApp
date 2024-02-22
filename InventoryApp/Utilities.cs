@@ -6,7 +6,7 @@
         public static void MainMenu()
         {
             Console.WriteLine("Inventario");
-            Console.WriteLine("Que desea hacer?");
+            Console.WriteLine("Que desea hacer    ?");
             Console.WriteLine("Agregar un repuesto: 1");
             Console.WriteLine("Obtener informacion de un repuesto:  2");
 
