@@ -1,0 +1,3 @@
+﻿using InventoryApp;
+
+Utilities.MainMenu();
