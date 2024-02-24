@@ -1,9 +1,11 @@
-﻿namespace InventoryApp
+﻿using InventoryApp.Helpers;
+
+namespace InventoryApp
 {
     public class Utilities
     {
 
-        private static List<Spare> inventory = new List<Spare>();
+        private static List<Spare> Inventory = new List<Spare>();
         public static void MainMenu()
         {
             string option;
@@ -38,7 +40,10 @@
                         Console.ReadLine();
                         break;
                     default:
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Opción invalida!");
+                        Console.ResetColor();
+                        Thread.Sleep(1000);
                         break;
                 }
                 Console.Clear();
@@ -54,31 +59,70 @@
             string Description;
             string VehicleBrand;
             string VehicleModel;
-            Group Group;
+            Group group;
+            bool HasConvertedGroupLanguage;
+
 
             Console.WriteLine("Ingrese los siguientes datos: ");
-            Console.WriteLine("Codigo del repuesto: ");
-            OemCode = Console.ReadLine();
 
-            Console.WriteLine("Marca del repuesto: ");
-            Brand = Console.ReadLine();
+            do
+            {
+                Console.WriteLine("Codigo del repuesto: ");
+                OemCode = Console.ReadLine()?.Trim(); 
+            } while (string.IsNullOrWhiteSpace(OemCode));
 
-            Console.WriteLine("Descripción: ");
-            Description = Console.ReadLine();
+            do
+            {
+                Console.WriteLine("Marca del repuesto: ");
+                Brand = Console.ReadLine()?.Trim(); 
+            } while (string.IsNullOrWhiteSpace(Brand));
+            do
+            {
+                Console.WriteLine("Descripción: ");
+                Description = Console.ReadLine()?.Trim() ; 
+            } while (string.IsNullOrWhiteSpace(Description));
 
-            Console.WriteLine("Marca del vehiculo:  ");
-            VehicleBrand = Console.ReadLine();
+            do
+            {
+                Console.WriteLine("Marca del vehiculo:  ");
+                VehicleBrand = Console.ReadLine()?.Trim(); 
+            } while (string.IsNullOrWhiteSpace(VehicleBrand));
 
             Console.WriteLine("Modelo del vehiculo: ");
             VehicleModel = Console.ReadLine();
 
-            Console.WriteLine("En que grupo quiere agruparlo, por ejm caja, corona: ");
-            Enum.TryParse(Console.ReadLine(), true, out Group);
+            do
+            {
+                Console.WriteLine("En que grupo quiere agruparlo, por ejm caja, corona: ");
+                string groupInput = Console.ReadLine()?.Trim().ToLower();
 
 
-            Spare newSpare = new Spare(Description, Brand,OemCode,VehicleBrand,VehicleModel,Group);
+                HasConvertedGroupLanguage =  GroupConverter.TryConvertFromSpanish(groupInput, out group); 
+                if (HasConvertedGroupLanguage)
+                {
+                    // Use the English enum value
+                    Console.WriteLine($"Grupo seleccionado: {group}");
+                }
+                else
+                {
+                    Console.WriteLine("Grupo no válido. Inténtelo de nuevo.");
+                }
 
-            inventory.Add(newSpare);
+
+                //isValidImput = Enum.TryParse(groupImput, true, out group) && Enum.IsDefined(typeof(Group),group  );
+
+                //if (!isValidImput)
+                //{
+                //    Console.WriteLine("Entrada no valida. Intente nuevamente.");
+                //}
+
+            } while (!HasConvertedGroupLanguage);
+            HasConvertedGroupLanguage = false;
+
+
+            Spare newSpare = new Spare(Description, Brand,OemCode,VehicleBrand,VehicleModel,group);
+
+            Inventory.Add(newSpare);
 
         }
 
@@ -91,7 +135,7 @@
                 Console.WriteLine("Ingrese el SKU del respuesto a buscar: ");
                 getSku = Console.ReadLine();
 
-                Spare findSpare = inventory.Find(s => s.Sku == getSku);
+                Spare findSpare = Inventory.Find(s => s.Sku == getSku);
 
                 string message = findSpare.ToString();
                 Console.WriteLine(message);
@@ -101,7 +145,7 @@
             }
             else
             {
-                foreach (var store in inventory)
+                foreach (var store in Inventory)
                 {
                     Console.WriteLine(store.ToString());
 
@@ -110,6 +154,11 @@
                 Console.ReadLine();
             }
 
+
+        }
+
+        protected void DisplayGroup()
+        {
 
         }
 

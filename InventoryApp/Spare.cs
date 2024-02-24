@@ -22,9 +22,6 @@
             Sku = OemCode + Brand;
         }
 
-
-
-
         public override string ToString()
         {
             return $"OEM: {OemCode}\nDescripción: {Description}\nMarca: {Brand}\nTipo de Vehiculo: {VehicleBrand}, modelo {VehicleModel}\nSKU: {Sku}";
