@@ -18,6 +18,7 @@ namespace InventoryApp
                 Console.WriteLine("Agregar un repuesto: 1");
                 Console.WriteLine("Obtener informacion de un repuesto:  2");
                 Console.WriteLine("Ver todos los repuestos: 3");
+                Console.WriteLine("Agregar cantidades: 4");
                 Console.WriteLine("Salir: 0");
 
                 option = Console.ReadLine();
@@ -28,12 +29,15 @@ namespace InventoryApp
                         AddSpareMenu();
                         break;
                     case "2":
-                        GetInfoMenu(showAllSpares);
+                        GetOneSpareInfoMenu(showAllSpares);
                         break;
                     case "3":
                         showAllSpares = true;
-                        GetInfoMenu(showAllSpares);
+                        GetOneSpareInfoMenu(showAllSpares);
                         showAllSpares = false;
+                        break;
+                    case "4":
+                        AddQuantitiesMenu();
                         break;
                     case "0":
                         Console.WriteLine("Presione enter para salir");
@@ -60,37 +64,58 @@ namespace InventoryApp
             string VehicleBrand;
             string VehicleModel;
             Group group;
+            int Quantity = 0 ;
+
             bool HasConvertedGroupLanguage;
 
 
             Console.WriteLine("Ingrese los siguientes datos: ");
 
+            // Set OEM
             do
             {
                 Console.WriteLine("Codigo del repuesto: ");
                 OemCode = Console.ReadLine()?.Trim(); 
             } while (string.IsNullOrWhiteSpace(OemCode));
 
+            // Set Brand
             do
             {
                 Console.WriteLine("Marca del repuesto: ");
                 Brand = Console.ReadLine()?.Trim(); 
             } while (string.IsNullOrWhiteSpace(Brand));
+
+            // Set Description
             do
             {
                 Console.WriteLine("Descripción: ");
                 Description = Console.ReadLine()?.Trim() ; 
             } while (string.IsNullOrWhiteSpace(Description));
 
+            // Set Vehicle Brand
             do
             {
                 Console.WriteLine("Marca del vehiculo:  ");
                 VehicleBrand = Console.ReadLine()?.Trim(); 
             } while (string.IsNullOrWhiteSpace(VehicleBrand));
 
+            // Set Vehicle Model
             Console.WriteLine("Modelo del vehiculo: ");
             VehicleModel = Console.ReadLine();
 
+            // Set Quantity
+            bool HasParsed;
+            do
+            {
+                Console.WriteLine("Ingrese la cantidad: ");
+                string value = Console.ReadLine();
+
+                HasParsed = int.TryParse(value, out Quantity);
+
+            } while (!HasParsed || Quantity < 0);
+            HasParsed = false;
+
+            // Set Group
             do
             {
                 Console.WriteLine("En que grupo quiere agruparlo, por ejm caja, corona: ");
@@ -117,16 +142,17 @@ namespace InventoryApp
                 //}
 
             } while (!HasConvertedGroupLanguage);
-            HasConvertedGroupLanguage = false;
+
+
 
 
             Spare newSpare = new Spare(Description, Brand,OemCode,VehicleBrand,VehicleModel,group);
-
             Inventory.Add(newSpare);
+            HasConvertedGroupLanguage = false;
 
         }
 
-        public static void GetInfoMenu(bool showAllSpares)
+        public static void GetOneSpareInfoMenu(bool showAllSpares)
         {
             if (!showAllSpares)
             {
@@ -157,8 +183,31 @@ namespace InventoryApp
 
         }
 
-        protected void DisplayGroup()
+        public static void AddQuantitiesMenu()
         {
+            string getSku;
+            int amountToAdd;
+
+            Console.WriteLine("Ingrese el SKU del respuesto a buscar: ");
+            getSku = Console.ReadLine();
+
+            Spare findSpare = Inventory.Find(s => s.Sku == getSku);
+
+            if(findSpare == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"SKU {getSku} invalido!");
+                Console.ResetColor();
+                Thread.Sleep(2000); ;
+                return;
+            }
+            string message = findSpare.ToString();
+            Console.WriteLine(message);
+
+            Console.WriteLine("\nIngrese la cantidad a agregar: ");
+            int.TryParse(Console.ReadLine(), out amountToAdd);
+
+            findSpare.IncreaseStock(amountToAdd);
 
         }
 
